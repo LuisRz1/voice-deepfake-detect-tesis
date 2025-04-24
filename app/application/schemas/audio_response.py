@@ -3,7 +3,7 @@ from datetime import datetime
 
 class AudioResponse(BaseModel):
     message: str
-    confidence: float
+    authenticity_score: float
     filename: str
     result: str
     timestamp: datetime

@@ -6,5 +6,5 @@ class Audio(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     filename: str
     result: str
-    confidence: float
+    authenticity_score: float
     created: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
