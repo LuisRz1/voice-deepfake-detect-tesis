@@ -1,5 +1,6 @@
-from typing import Protocol
+from typing import Protocol, List
 from app.domain.models.audio import Audio
 
 class IAudioRepository(Protocol):
     def save(self, audio: Audio) -> Audio: ...
+    def get_all(self) -> List[Audio]: ...

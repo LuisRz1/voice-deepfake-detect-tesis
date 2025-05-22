@@ -3,6 +3,7 @@ import uuid
 import torch
 import librosa
 import tempfile
+from typing import Tuple, List
 from fastapi import UploadFile
 from datetime import datetime, timezone
 from app.domain.models.audio import Audio
@@ -14,10 +15,9 @@ class AudioService:
         self.model = model
         self.processor = processor
 
-    async def predict_audio(self, file: UploadFile) -> Audio:
+    async def predict_audio(self, file: UploadFile) -> Tuple[Audio, float]:
         try:
-            ext = file.filename.split(".")[-1]
-            filename = f"audio_{uuid.uuid4()}.{ext}"
+            filename = file.filename
 
             temp_dir = tempfile.gettempdir()
             filepath = os.path.join(temp_dir, filename)
@@ -25,7 +25,8 @@ class AudioService:
             with open(filepath, "wb") as buffer:
                 buffer.write(await file.read())
 
-            signal, _ = librosa.load(filepath, sr=16000)
+            signal, sr = librosa.load(filepath, sr=16000)
+            duration = librosa.get_duration(y=signal, sr=sr)
             inputs = self.processor(signal, sampling_rate=16000, return_tensors="pt", padding=True)
 
             with torch.no_grad():
@@ -43,8 +44,16 @@ class AudioService:
                 authenticity_score=round(authenticity_score, 2),
                 created=datetime.now(timezone.utc),
             )
-            return self.repository.save(audio)
+            saved_audio = self.repository.save(audio)
+            return saved_audio, duration
 
         except Exception as e:
             print(f"[ERROR] {e}")
+            raise
+
+    def get_all_audios(self) -> List[Audio]:
+        try:
+            return self.repository.get_all()
+        except Exception as e:
+            print(f"[ERROR] get_all_audios: {e}")
             raise
