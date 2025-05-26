@@ -1,8 +1,8 @@
 import os
-import uuid
 import torch
 import librosa
 import tempfile
+import soundfile as sf
 from typing import Tuple, List
 from fastapi import UploadFile
 from datetime import datetime, timezone
@@ -19,15 +19,27 @@ class AudioService:
         try:
             filename = file.filename
 
+            # Guardar archivo temporalmente
             temp_dir = tempfile.gettempdir()
             filepath = os.path.join(temp_dir, filename)
 
             with open(filepath, "wb") as buffer:
                 buffer.write(await file.read())
 
-            signal, sr = librosa.load(filepath, sr=16000)
+            # Leer sample rate original sin cargar aún
+            with sf.SoundFile(filepath) as f:
+                sr_original = f.samplerate
+
+            # Optimizar carga con librosa solo si es necesario
+            if sr_original == 16000:
+                signal, sr = librosa.load(filepath, sr=None, mono=True, duration=5.0)
+            else:
+                signal, sr = librosa.load(filepath, sr=16000, mono=True, duration=5.0)
+
             duration = librosa.get_duration(y=signal, sr=sr)
-            inputs = self.processor(signal, sampling_rate=16000, return_tensors="pt", padding=True)
+
+            # Procesamiento con Hugging Face
+            inputs = self.processor(signal, sampling_rate=sr, return_tensors="pt", padding=True)
 
             with torch.no_grad():
                 logits = self.model(**inputs).logits
@@ -35,6 +47,7 @@ class AudioService:
             prediction = torch.argmax(logits, dim=1).item()
             probs = torch.softmax(logits, dim=1)
             authenticity_score = probs[0][0].item() * 100
+
             os.remove(filepath)
 
             result = "fake" if prediction == 1 else "real"
