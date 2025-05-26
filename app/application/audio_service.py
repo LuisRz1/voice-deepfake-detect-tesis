@@ -2,6 +2,7 @@ import os
 import torch
 import librosa
 import tempfile
+import soundfile as sf
 from typing import Tuple, List
 from fastapi import UploadFile
 from datetime import datetime, timezone
