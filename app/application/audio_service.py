@@ -15,7 +15,7 @@ class AudioService:
         self.model = model
         self.processor = processor
 
-    async def predict_audio(self, file: UploadFile) -> Tuple[Audio, float]:
+    async def predict_audio(self, file: UploadFile, device_id: str) -> Tuple[Audio, float]:
         try:
             filename = file.filename
 
@@ -56,6 +56,7 @@ class AudioService:
                 result=result,
                 authenticity_score=round(authenticity_score, 2),
                 created=datetime.now(timezone.utc),
+                device_id=device_id  # ← NUEVO: se guarda el identificador del usuario/dispositivo
             )
             saved_audio = self.repository.save(audio)
             return saved_audio, duration
@@ -69,4 +70,11 @@ class AudioService:
             return self.repository.get_all()
         except Exception as e:
             print(f"[ERROR] get_all_audios: {e}")
+            raise
+
+    def get_audios_by_device(self, device_id: str) -> List[Audio]:
+        try:
+            return self.repository.get_by_device(device_id)
+        except Exception as e:
+            print(f"[ERROR] get_audios_by_device: {e}")
             raise

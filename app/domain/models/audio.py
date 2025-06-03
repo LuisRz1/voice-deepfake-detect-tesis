@@ -8,3 +8,4 @@ class Audio(SQLModel, table=True):
     result: str
     authenticity_score: float
     created: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    device_id: str  # nuevo campo para vincular el audio con el dispositivo

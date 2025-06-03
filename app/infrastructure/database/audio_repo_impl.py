@@ -22,3 +22,16 @@ class SQLAudioRepository(IAudioRepository):
         except Exception as e:
             print(f"[ERROR] Fetching audios failed: {e}")
             raise
+
+    def get_by_device(self, device_id: str) -> List[Audio]:
+        try:
+            with get_session() as session:
+                return (
+                    session.query(Audio)
+                    .filter(Audio.device_id == device_id)
+                    .order_by(Audio.created.desc())
+                    .all()
+                )
+        except Exception as e:
+            print(f"[ERROR] Fetching audios by device_id failed: {e}")
+            raise
