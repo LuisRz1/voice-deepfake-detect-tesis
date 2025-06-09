@@ -8,4 +8,9 @@ class Audio(SQLModel, table=True):
     result: str
     authenticity_score: float
     created: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    device_id: str  # nuevo campo para vincular el audio con el dispositivo
+    device_id: str  # Identificador del dispositivo que envió el audio
+
+    # Nuevos campos para registrar el tiempo de inferencia
+    inference_start: Optional[datetime] = None  # Cuándo comenzó la inferencia
+    inference_end: Optional[datetime] = None    # Cuándo terminó
+    inference_duration: Optional[float] = None  # Duración total en segundos

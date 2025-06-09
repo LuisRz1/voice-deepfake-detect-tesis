@@ -18,15 +18,18 @@ async def predict(file: UploadFile = File(...), device_id: str = Form(...)):
         )
         return AudioResponse(
             id=audio.id,
-            message="El audio tiene altas probabilidades de haber sido generado por IA" if audio.result == "fake"
-                    else "El audio parece ser original",
+            message="El audio tiene altas probabilidades..." if audio.result == "fake" else "El audio parece ser original",
             authenticity_score=audio.authenticity_score,
             filename=audio.filename,
             result=audio.result,
             timestamp=audio.created,
             duration=round(duration, 2),
-            model_name="SpecRNet"  # o usa model.config._name_or_path si deseas extraer dinámicamente
+            model_name="SpecRNet",
+            inference_start=audio.inference_start,
+            inference_end=audio.inference_end,
+            inference_duration=audio.inference_duration
         )
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
