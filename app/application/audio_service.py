@@ -54,7 +54,7 @@ class AudioService:
             authenticity_score = probs[0][0].item() * 100
             os.remove(filepath)
 
-            result = "fake" if prediction == 1 else "real"
+            result = "falso" if prediction == 1 else "real"
 
             # Crear y guardar el objeto Audio
             audio = Audio(
