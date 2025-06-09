@@ -18,7 +18,7 @@ async def predict(file: UploadFile = File(...), device_id: str = Form(...)):
         )
         return AudioResponse(
             id=audio.id,
-            message="El audio tiene altas probabilidades..." if audio.result == "fake" else "El audio parece ser original",
+            message="El audio tiene altas probabilidades de haber sido generado por IA" if audio.result == "Falso" else "El audio parece ser original",
             authenticity_score=audio.authenticity_score,
             filename=audio.filename,
             result=audio.result,
