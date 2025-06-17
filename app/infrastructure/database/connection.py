@@ -5,7 +5,9 @@ import os
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./default.db")
-engine = create_engine(DATABASE_URL, echo=False)
+
+# Para PostgreSQL se recomienda esto:
+engine = create_engine(DATABASE_URL, echo=False, connect_args={})
 
 def get_session():
     return Session(engine)
