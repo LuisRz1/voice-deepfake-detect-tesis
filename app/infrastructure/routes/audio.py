@@ -43,6 +43,7 @@ async def get_audios(device_id: str = Query(...)):  # ← Se filtra por device_i
                 filename=a.filename,
                 result=a.result,
                 authenticity_score=a.authenticity_score,
+                inference_duration=a.inference_duration,
                 timestamp=a.created
             )
             for a in audios

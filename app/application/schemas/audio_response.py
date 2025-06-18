@@ -21,4 +21,5 @@ class AudioListItem(BaseModel):
     filename: str
     result: str
     authenticity_score: float
+    inference_duration: Optional[float]
     timestamp: datetime
