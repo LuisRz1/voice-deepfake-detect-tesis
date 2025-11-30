@@ -3,14 +3,19 @@ from typing import Optional
 from datetime import datetime, timezone
 
 class Audio(SQLModel, table=True):
+    __tablename__ = "audios"
+
     id: Optional[int] = Field(default=None, primary_key=True)
+    # Relación: audio pertenece a un usuario
+    user_id: int = Field(foreign_key="users.id", index=True)   # << NUEVO
     filename: str
     result: str
     authenticity_score: float
     created: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    device_id: str  # Identificador del dispositivo que envió el audio
+    # opcional: si aún quieres rastrear el equipo, mantenlo como nullable
+    device_id: Optional[str] = None
 
-    # Nuevos campos para registrar el tiempo de inferencia
-    inference_start: Optional[datetime] = None  # Cuándo comenzó la inferencia
-    inference_end: Optional[datetime] = None    # Cuándo terminó
-    inference_duration: Optional[float] = None  # Duración total en segundos
+    # Tiempos de inferencia
+    inference_start: Optional[datetime] = None
+    inference_end: Optional[datetime] = None
+    inference_duration: Optional[float] = None
