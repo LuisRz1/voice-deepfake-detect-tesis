@@ -42,6 +42,7 @@ async def predict_audio(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# ✨ NUEVO: Ahora NO requiere device_id como parámetro
 @router.get("/audios", response_model=List[AudioListItem])
 def get_audios(user: User = Depends(get_current_user)):
     """Lista los audios del usuario autenticado."""
